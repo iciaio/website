@@ -38,3 +38,7 @@ psql -h 127.0.0.1 -p 5432 website_db -U alicia
 ```
 
 # API
+to start our backend:
+```bash
+ uvicorn main:app --reload
+```
