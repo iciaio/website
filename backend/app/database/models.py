@@ -1,26 +1,28 @@
 import datetime
 import datetime as _dt
+from typing import List
+
 import sqlalchemy as _sql
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.orm import relationship
 import sqlalchemy.ext.declarative as _declarative
 
 Base = _declarative.declarative_base()
 
+
 class Content(Base):
     __tablename__ = "content"
-    id: str = _sql.Column(_sql.Integer, primary_key=True, index=True)
-    date: datetime.datetime = _sql.Column(_sql.DateTime, default=_dt.datetime.utcfromtimestamp(0))
-    description: str = _sql.Column(_sql.String, index=True)
-    s3_documentation: str = _sql.Column(_sql.String, nullable=True)
-    title: str = _sql.Column(_sql.String, nullable=True)
-    project_id = _sql.Column(_sql.Integer, _sql.ForeignKey("projects.id"))
-    project = relationship("Project", back_populates="content")
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    date: Mapped[datetime.datetime] = mapped_column(default=_dt.datetime.utcfromtimestamp(0))
+    description: Mapped[str] = mapped_column(index=True)
+    s3_documentation: Mapped[str] = mapped_column(nullable=True)
+    title: Mapped[str] = mapped_column(nullable=True)
+    project_id: Mapped[int] = mapped_column(_sql.ForeignKey("projects.id"))
 
 
 class Project(Base):
     __tablename__ = "projects"
-    id: str = _sql.Column(_sql.Integer, primary_key=True, index=True)
-    project_title: str = _sql.Column(_sql.String, index=True)
-    tags: Mapped[int] = _sql.Column(_sql.ARRAY(_sql.String))
-    content = relationship("Content", back_populates="project")
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+    project_title: Mapped[str] = mapped_column(index=True)
+    tags: Mapped[List[str]] = mapped_column(_sql.ARRAY(_sql.String))
+    content: Mapped[List["Content"]] = relationship()

@@ -19,12 +19,23 @@ def db_session():
 
 
 async def create_project(
-        project: _api_models.CreateProject, _db_session: "Session"
+        project: _api_models.CreateProject, db: "Session"
 ) -> _api_models.Project:
-    project = _api_models.Project(**project.model_dump())
-    print("-------------")
-    print(project)
-    _db_session.add(project)
-    _db_session.commit()
-    _db_session.refresh(project)
-    return _api_models.Project.from_orm(project)
+    print(project);
+    dumped_content = [_db_models.Content(**m.model_dump()) for m in project.content]
+    db_project = _db_models.Project(
+        project_title=project.project_title,
+        tags=project.tags,
+        content=dumped_content
+    )
+
+    # Add the SQLAlchemy model instance to the session
+    db.add(db_project)
+
+    # Commit the changes and refresh the instance to get the updated data
+    db.commit()
+    db.refresh(db_project)
+
+    # Convert the SQLAlchemy model instance to a Pydantic model and return
+    return _api_models.Project.model_validate(db_project)
+

@@ -1,5 +1,6 @@
 import datetime as _dt
-from typing import List, Union
+from typing import List, Union, Optional
+from typing import Dict
 
 import pydantic as _pydantic
 
@@ -7,8 +8,11 @@ import pydantic as _pydantic
 class _BaseContent(_pydantic.BaseModel):
     date: _dt.datetime
     description: str
-    s3_documentation: Union[str, None]
-    title: Union[str, None]
+    s3_documentation: Optional[str]
+    title: Optional[str]
+
+    class Config:
+        from_attributes = True
 
 
 class Content(_BaseContent):
@@ -19,11 +23,14 @@ class Content(_BaseContent):
 class _BaseProject(_pydantic.BaseModel):
     project_title: str
     tags: List[str]
-    content: Union[_BaseContent, List[_BaseContent]]
+    content: List[_BaseContent]
 
 
 class Project(_BaseProject):
     id: int
+
+    class Config:
+        from_attributes = True
 
 
 class CreateProject(_BaseProject):

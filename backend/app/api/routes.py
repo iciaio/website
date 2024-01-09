@@ -1,9 +1,21 @@
 import sqlalchemy.orm as _orm
 import fastapi as _fastapi
-import app.api.models as _models
+import app.api.models as _api_models
 from app.services import services
+import logging
 
 router = _fastapi.APIRouter()
+
+logger = logging.getLogger("router")
+logger.setLevel(logging.DEBUG)
+
+
+@router.post("/projects", response_model=_api_models.Project)
+async def create_project(
+        project: _api_models.CreateProject,
+        db: _orm.session = _fastapi.Depends(services.db_session)
+):
+    return await services.create_project(project=project, db=db)
 
 
 # mock_projects = {
@@ -43,12 +55,13 @@ router = _fastapi.APIRouter()
 # }
 
 # @app.post("/api/projects", response_model=_schemas.Project)
-@router.post("/api/projects", response_model=_models.Project)
-async def create_project(
-        project: _models.CreateProject,
-        db: _orm.session = _fastapi.Depends(services.db_session)
-):
-    return await services.create_project(project, db)
+# @router.post("/api/projects", response_model=_api_models.Project)
+# async def create_project(
+#         project: _api_models.CreateProject,
+#         db: _orm.session = _fastapi.Depends(services.db_session)
+# ):
+#     print("------------?????")
+#     return await services.create_project(project=project, db=db)
 
 # @app.get("/api/project/{id}")
 # def get_project(id: int):
